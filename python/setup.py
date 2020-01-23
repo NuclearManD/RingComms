@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyringcomm",
-    version="0.0.1",
+    version="0.0.2",
     author="Nuclaer (Nuclear_Man_D)",
     author_email="dylanbrophy@gmail.com",
     description="Communication ring for automated systems",
