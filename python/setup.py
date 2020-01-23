@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyringcomm-Nuclaer", # Replace with your own username
+    name="pyringcomm",
     version="0.0.1",
     author="Nuclaer (Nuclear_Man_D)",
     author_email="dylanbrophy@gmail.com",
