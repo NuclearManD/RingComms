@@ -33,8 +33,8 @@ class Communicator:
         self.recv_callback = on_recv_callback
         self.close_callback = on_close_callback
         _thread.start_new_thread(self.__receiver__, ())
-    def send_raw(self, jsonobj):
-        text = json.dumps(jsonobj).encode()
+    def send_raw(self, json_txt):
+        text = json_txt.encode()
         self.socket.sendall(len(text).to_bytes(3, 'big'))
         self.socket.sendall(text)
     def __receiver__(self):
@@ -45,7 +45,7 @@ class Communicator:
                     break
                 length = int.from_bytes(lenbytes, 'big')
                 data = self.socket.recv(length).decode()
-                self.recv_callback(self, json.loads(data))
+                self.recv_callback(self, data)
         except:
             pass
         self.close_callback(self)
