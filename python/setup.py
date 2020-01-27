@@ -5,12 +5,12 @@ with open("README.md", "r") as fh:
 
 requirements = [
         'cityhash==0.2.3.post9',
-        'cryptography==2.8'
+        'cryptography'
     ]
 
 setuptools.setup(
     name="pyringcomm",
-    version="0.0.4",
+    version="0.0.5",
     author="Nuclaer (Nuclear_Man_D)",
     author_email="dylanbrophy@gmail.com",
     description="Communication ring for automated systems",

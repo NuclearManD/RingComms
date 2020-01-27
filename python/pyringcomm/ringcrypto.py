@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from ringman import TOPIC_KEY, DATA_KEY, CRYPT_KEY
+from .ringman import TOPIC_KEY, DATA_KEY, CRYPT_KEY
 import json, re
 
 class FernetSubscriber:
