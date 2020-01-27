@@ -7,35 +7,44 @@ DATA_KEY = '%data'
 
 class Subscriber:
     def __init__(self, manager, callback, topic_pattern):
+        'Create a subscriber object manually'
         self.topic = re.compile(topic_pattern)
         self.callback = callback
         self.manager = manager
     def recv(self, jsonobj):
+        'Internal use; processes incoming messages and calls the callback'
         if self.topic.fullmatch(jsonobj[TOPIC_KEY]) !=None:
             self.callback(self, jsonobj[DATA_KEY])
 class Publisher:
     def __init__(self, manager, topic):
+        'Create a publisher object manually'
         self.topic = topic
         self.man = manager
     def publish(self, payload):
+        'Publish a message'
         self.man.publish(self.topic, payload)
         
 class Manager:
     def __init__(self):
+        'Class to manage connections, publishers, and subscribers'
         self.coms = []
         self.subscribers = []
         self.hashes = []
         self.hash_times = []
         self.hash_lock = Lock()
     def add_com(self, com):
+        'Add a Communicator object'
         self.coms.append(com)
     def subscribe(self, callback, topic_pattern):
+        'Get a subscriber to a topic or a pattern of topics'
         sub = Subscriber(self, callback, topic_pattern)
         self.subscribers.append(sub)
         return sub
     def advertise(self, topic):
+        'Get a publisher for a topic'
         return Publisher(self, topic)
     def publish(self, topic, payload):
+        'single-time publish of a topic'
         jsonobj = {
             TOPIC_KEY: topic,
             DATA_KEY : payload
@@ -47,6 +56,7 @@ class Manager:
             for i in self.coms:
                 i.send_raw(json_txt)
     def on_recv(self, src, json_txt):
+        'Internal use; processes incoming JSON text and routes messages'
         if self.hash_handle(json_txt):
             jsonobj = json.loads(json_txt)
             for i in self.subscribers:
@@ -69,3 +79,6 @@ class Manager:
             self.hashes.append(hash)
             self.hash_times.append(time.time())
         return True
+    def on_close(self, com):
+        'Internal use; handler for a closed Communicator object'
+        self.coms.remove(com)
