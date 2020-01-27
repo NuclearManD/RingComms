@@ -10,7 +10,7 @@ requirements = [
 
 setuptools.setup(
     name="pyringcomm",
-    version="0.0.3",
+    version="0.0.4",
     author="Nuclaer (Nuclear_Man_D)",
     author_email="dylanbrophy@gmail.com",
     description="Communication ring for automated systems",
