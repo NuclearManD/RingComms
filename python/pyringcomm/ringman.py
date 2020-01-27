@@ -1,4 +1,4 @@
-import re, json
+import re, json, time
 from cityhash import CityHash128
 from threading import Lock
 
@@ -81,4 +81,5 @@ class Manager:
         return True
     def on_close(self, com):
         'Internal use; handler for a closed Communicator object'
-        self.coms.remove(com)
+        if com in self.coms:
+            self.coms.remove(com)

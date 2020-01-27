@@ -1,6 +1,6 @@
 import socket, _thread, json, time
 
-DEFAULT_PORT = 325
+DEFAULT_PORT = 3250
 
 class ProtocolException(Exception):
     pass
@@ -31,24 +31,26 @@ class Communicator:
                 self.recv_callback(self, data)
         finally:
             self.close_callback(self)
-        
+    def close(self):
+        'Close the Communicator'
+        self.socket.close()
 
 class Client:
     def __init__(self, man, address, port = DEFAULT_PORT):
         'Connect to a server'
-        self.socket = socket.socket()
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((address, port))
-        self.com = Communicator(sok, man.on_recv, man.on_close)
+        self.com = Communicator(self.socket, man.on_recv, man.on_close)
         self.manager = man
         man.add_com(self.com)
     def disconnect(self):
         'Close the connection to the server'
-        self.manager.rm_com(self.com)
+        self.manager.on_close(self.com)
         self.socket.close()
 class Server:
     def __init__(self, man, port = DEFAULT_PORT, adr='0.0.0.0'):
         'Create a server object'
-        self.socket = socket.socket()
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((adr, port))
         self.communicators = []
         self.running = False
@@ -68,13 +70,16 @@ class Server:
         self.socket.close()
     def __server_thread__(self):
         while self.running:
-            connection, client_address = sock.accept()
+            connection, client_address = self.socket.accept()
             try:
-                com = Communicator(connection, self.man.on_recv, self.on_close)
+                com = Communicator(connection, self.manager.on_recv, self.on_close)
             except ProtocolException:
                 print("Failed to connect to " + str(client_address) + " because they are using the wrong protocol")
                 connection.close()
                 continue
             print("Connected to " + str(client_address))
             self.communicators.append(com)
-            self.man.add_com(com)
+            self.manager.add_com(com)
+    def on_close(self, com):
+        self.manager.on_close(com)
+        self.communicators.remove(com)
