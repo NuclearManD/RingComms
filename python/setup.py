@@ -3,6 +3,11 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+requirements = [
+        'cityhash==0.2.3.post9',
+        'cryptography==2.8'
+    ]
+
 setuptools.setup(
     name="pyringcomm",
     version="0.0.3",
@@ -18,8 +23,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.5',
-    install_requires=[
-        'cityhash==0.2.3.post9',
-        'cryptography==2.8'
-    ]
+    install_requires=requirements,
+    setup_requires=requirements
 )
