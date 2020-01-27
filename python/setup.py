@@ -19,6 +19,7 @@ setuptools.setup(
     ],
     python_requires='>=3.5',
     install_requires=[
-        'cityhash',
+        'cityhash==0.2.3.post9',
+        'cryptography==2.8'
     ]
 )

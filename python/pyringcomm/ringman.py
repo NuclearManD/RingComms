@@ -4,6 +4,7 @@ from threading import Lock
 
 TOPIC_KEY = '%topic'
 DATA_KEY = '%data'
+CRYPT_KEY = '%ct'
 
 class Subscriber:
     def __init__(self, manager, callback, topic_pattern):
@@ -11,10 +12,11 @@ class Subscriber:
         self.topic = re.compile(topic_pattern)
         self.callback = callback
         self.manager = manager
+        manager.subscribers.append(self)
     def recv(self, jsonobj):
         'Internal use; processes incoming messages and calls the callback'
         if self.topic.fullmatch(jsonobj[TOPIC_KEY]) !=None:
-            self.callback(self, jsonobj[DATA_KEY])
+            self.callback(self, jsonobj[TOPIC_KEY], jsonobj[DATA_KEY])
 class Publisher:
     def __init__(self, manager, topic):
         'Create a publisher object manually'
@@ -38,7 +40,6 @@ class Manager:
     def subscribe(self, callback, topic_pattern):
         'Get a subscriber to a topic or a pattern of topics'
         sub = Subscriber(self, callback, topic_pattern)
-        self.subscribers.append(sub)
         return sub
     def advertise(self, topic):
         'Get a publisher for a topic'
@@ -48,6 +49,18 @@ class Manager:
         jsonobj = {
             TOPIC_KEY: topic,
             DATA_KEY : payload
+            }
+        json_txt = json.dumps(jsonobj)
+        if self.hash_handle(json_txt):
+            for i in self.subscribers:
+                i.recv(jsonobj)
+            for i in self.coms:
+                i.send_raw(json_txt)
+    def publish_crypt(self, topic, cyphertext):
+        'single-time publish of an encrypted topic'
+        jsonobj = {
+            TOPIC_KEY: topic,
+            CRYPT_KEY: cyphertext
             }
         json_txt = json.dumps(jsonobj)
         if self.hash_handle(json_txt):
