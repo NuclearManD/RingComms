@@ -1,4 +1,4 @@
-import re, json, time, random
+import re, json
 from cityhash import CityHash128
 from threading import Lock
 
@@ -69,26 +69,3 @@ class Manager:
             self.hashes.append(hash)
             self.hash_times.append(time.time())
         return True
-def test_hash_speed():
-    def timehash(indata):
-        t = time.time()
-        res = CityHash128(indata)
-        return time.time() - t
-    def time_len(l):
-        'returns hashes/second for random bytes of length l'
-        t = time.time() + 10
-        n = 0
-        timer = 0
-        while t > time.time():
-            n += 1
-            data = ''
-            for i in range(l):
-                data += chr(random.randint(0,255))
-            timer += timehash(data)
-        return n / timer
-    print("Testing for short messages (128 bytes)")
-    short_speed = round(time_len(128)/1000000, 3)
-    print(str(short_speed) + " Mhashes/sec")
-    print("Testing for long messages (8192 bytes)")
-    long_speed = round(time_len(8192)/1000000, 3)
-    print(str(long_speed) + " Mhashes/sec")

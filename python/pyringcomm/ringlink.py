@@ -5,25 +5,6 @@ DEFAULT_PORT = 325
 class ProtocolException(Exception):
     pass
 
-class test_socket:
-    def __init__(self):
-        self.buffer = b'ring'
-    def recv(self,n):
-        while self.buffer == b'':
-            time.sleep(.01)
-        dt = self.buffer[:n]
-        self.buffer = self.buffer[n:]
-        return dt
-    def wr(self, jsonobj):
-        go = json.dumps(jsonobj).encode()
-        self.buffer += len(go).to_bytes(3, 'big')
-        self.buffer += go
-    def sendall(self, d):
-        print("sendall(" + repr(d) + ')')
-
-def onrec(d, m):
-    print("Com "+repr(d)+" revc'd " + repr(m))
-
 class Communicator:
     def __init__(self, socket, on_recv_callback, on_close_callback):
         self.socket = socket
